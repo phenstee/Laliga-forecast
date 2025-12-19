@@ -51,7 +51,7 @@ def probs_with_draw(r_home, r_away, home_adv=60.0):
     return diff, p_home, p_draw, p_away
 
 
-st.title("Match Preview")
+st.title("Match Predictions")
 
 df = load_matches()
 ratings = load_latest().set_index("team")["rating"].to_dict()
@@ -65,13 +65,38 @@ r_home = float(ratings.get(home, 1500))
 r_away = float(ratings.get(away, 1500))
 diff, p_home, p_draw, p_away = probs_with_draw(r_home, r_away)
 
-c1, c2, c3 = st.columns(3)
-c1.metric("Home win", f"{p_home*100:.1f}%")
-c2.metric("Draw", f"{p_draw*100:.1f}%")
-c3.metric("Away win", f"{p_away*100:.1f}%")
+left, right = st.columns([2, 1])
+with left:
+    st.markdown("### Probability")
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Home win", f"{p_home*100:.1f}%")
+    c2.metric("Draw", f"{p_draw*100:.1f}%")
+    c3.metric("Away win", f"{p_away*100:.1f}%")
+    st.progress(int(p_home*100))
+    st.progress(int(p_draw*100))
+    st.progress(int(p_away*100))
 
-st.write("### Why (simple explanation)")
-st.write(f"Elo diff (home incl. advantage): **{diff:.1f}** points")
-form_home = team_last_n(df, home, n=5)
-form_away = team_last_n(df, away, n=5)
-st.write({f"{home} last 5": form_home, f"{away} last 5": form_away})
+with right:
+    st.markdown("### Quick stats")
+    st.write(f"Elo diff (home incl. advantage): **{diff:.1f}** points")
+
+    # Present last-n stats as friendly metrics instead of raw dicts
+    home_stats = team_last_n(df, home, n=5)
+    away_stats = team_last_n(df, away, n=5)
+
+    left_box, right_box = st.columns(2)
+    with left_box:
+        st.markdown(f"**{home} (last 5)**")
+        st.metric(label="Points", value=home_stats["points"])
+        g1, g2 = st.columns(2)
+        g1.metric("GF", home_stats["gf"])
+        g2.metric("GA", home_stats["ga"])
+        st.caption(f"Matches: {home_stats['matches']}")
+
+    with right_box:
+        st.markdown(f"**{away} (last 5)**")
+        st.metric(label="Points", value=away_stats["points"])
+        g1, g2 = st.columns(2)
+        g1.metric("GF", away_stats["gf"])
+        g2.metric("GA", away_stats["ga"])
+        st.caption(f"Matches: {away_stats['matches']}")

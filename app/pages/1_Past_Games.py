@@ -32,12 +32,12 @@ def probs_with_draw(r_home, r_away, home_adv=60.0):
     return p_home, p_draw, p_away
 
 
-st.title("Fixtures (Pick any match)")
+st.title("Past Games")
 
 ratings = load_latest().set_index("team")["rating"].to_dict()
 matches = load_matches()
 
-# Since your dataset may not include future fixtures, we let you pick any match
+# Use recent matches as selectable history
 matches = matches.sort_values("date", ascending=False).head(200)
 
 idx = st.selectbox(
@@ -53,11 +53,12 @@ r_home = float(ratings.get(home, 1500))
 r_away = float(ratings.get(away, 1500))
 p_home, p_draw, p_away = probs_with_draw(r_home, r_away)
 
-c1, c2, c3 = st.columns(3)
-c1.metric("Home win", f"{p_home*100:.1f}%")
-c2.metric("Draw", f"{p_draw*100:.1f}%")
-c3.metric("Away win", f"{p_away*100:.1f}%")
+st.markdown("### Match probability")
+cols = st.columns([1, 1, 1])
+cols[0].metric("Home win", f"{p_home*100:.1f}%")
+cols[1].metric("Draw", f"{p_draw*100:.1f}%")
+cols[2].metric("Away win", f"{p_away*100:.1f}%")
 
-st.write("### Ratings")
-st.write({"home_team": home, "home_rating": r_home,
-         "away_team": away, "away_rating": r_away})
+with st.expander("Ratings and details"):
+    st.write({"home_team": home, "home_rating": r_home,
+              "away_team": away, "away_rating": r_away})

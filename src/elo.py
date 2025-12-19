@@ -4,7 +4,7 @@ import numpy as np
 
 IN_PATH = Path("data/processed/matches_clean.csv")
 OUT_HISTORY = Path("data/processed/elo_history.csv")
-OUT_LATEST = Path("data/processed/elo_latest_rating.csv")
+OUT_LATEST = Path("data/processed/latest_ratings.csv")
 
 BASE_RATING = 1500.0
 K = 20.0
@@ -97,12 +97,12 @@ def main():
     hist.to_csv(OUT_HISTORY, index=False)
 
     latest = (
-        pd.DataFrame({"Teams": list(ratings.keys()),
-                     "Ratings": list(ratings.values())})
-        .sort_values("Ratings", ascending=False)
+        pd.DataFrame({"team": list(ratings.keys()),
+                      "rating": list(ratings.values())})
+        .sort_values("rating", ascending=False)
         .reset_index(drop=True)
     )
-    latest["Ratings"] = latest["Ratings"].round(1)
+    latest["rating"] = latest["rating"].round(1)
     latest.to_csv(OUT_LATEST, index=False)
 
     print("Saved:", OUT_HISTORY)

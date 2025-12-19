@@ -6,6 +6,7 @@ import numpy as np
 @st.cache_data
 def load_hist():
     df = pd.read_csv("data/processed/elo_history.csv")
+    df["date"] = pd.to_datetime(df["date"])
     return df
 
 
@@ -40,9 +41,12 @@ def ll(row):
 
 
 df["log_loss"] = df.apply(ll, axis=1)
+
 st.metric("Matches", len(df))
-st.metric("Accuracy (argmax)", f"{accuracy*100:.2f}%")
+st.metric("Accuracy", f"{accuracy*100:.2f}%")
 st.metric("Avg log loss", f"{df['log_loss'].mean():.4f}")
+
+st.divider()
 
 st.write("Sample rows")
 st.dataframe(df.head(20))
