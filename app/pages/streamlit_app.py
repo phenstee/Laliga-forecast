@@ -1,5 +1,8 @@
 import streamlit as st
 
+st.sidebar.title("Navigation")
+st.sidebar.write("Use the page list above to switch pages.")
+
 st.set_page_config(page_title="LaLiga Forecast", layout="wide")
 
 st.title("LaLiga Match Analysis + Forecast")
